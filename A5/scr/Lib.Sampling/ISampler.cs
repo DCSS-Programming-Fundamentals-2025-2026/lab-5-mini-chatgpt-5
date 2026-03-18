@@ -1,4 +1,4 @@
-namespace Lib;
+namespace scr;
 
 public interface ISampler
 {

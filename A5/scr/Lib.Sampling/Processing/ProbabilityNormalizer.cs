@@ -16,7 +16,7 @@ public static class ProbabilityNormalizer
         
         float[] probs = new float[logits.Length];
 
-        float maxLogit = float.MaxValue;
+        float maxLogit = float.MinValue;
         for (int i = 0; i < probs.Length; i++)
         {
             if (logits[i] > maxLogit)

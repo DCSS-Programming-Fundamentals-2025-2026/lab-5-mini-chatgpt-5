@@ -28,7 +28,7 @@ public static class ProbabilityNormalizer
         float sumExp = 0f;
         for (int i = 0; i < probs.Length; i++)
         {
-            probs[i] = (float)Math.Exp(probs[i] - maxLogit);
+            probs[i] = (float)Math.Exp(logits[i] - maxLogit);
             sumExp += probs[i];
         }
 

@@ -19,7 +19,7 @@ public class Sampler : ISampler
 
         for (int i = 0; i < topKIndices.Length; i++)
         {
-            topKlogits[i] = temperedLogits[i];
+            topKlogits[i] = temperedLogits[topKIndices[i]];
         }
 
         float[] topKProbs = ProbabilityNormalizer.Normalize(topKlogits);
@@ -45,6 +45,6 @@ public class Sampler : ISampler
     public int Sample(float[] probs, float temperature, int topK, int seed)
     {
         Random deterministicRng = new Random(seed);
-        return Sample(probs, temperature, topK, seed);
+        return Sample(probs, temperature, topK, deterministicRng);
     }
 }

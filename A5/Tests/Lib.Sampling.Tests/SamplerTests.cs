@@ -34,10 +34,8 @@ public class SamplerTests
             Assert.That(resultsRun1[i], Is.EqualTo(resultsRun2[i]), "Determinism is violated: the results vary.");
         }
     }
-
-
-
-        [Test]
+    
+    [Test]
     public void Test2()
     {
         ISampler sampler = new Sampler();
@@ -54,8 +52,6 @@ public class SamplerTests
             Assert.That(result, Is.EqualTo(2), "Top-K clipping is not working properly.");
         }
     }
-
-    
     
     [Test]
     public void Test3()
@@ -73,4 +69,45 @@ public class SamplerTests
         Assert.That(result, Is.EqualTo(1), "At normal temperatures, the algorithm should correctly handle a standard probability distribution.");
     }
     
+    [Test]
+    public void Test4()
+    {
+        ISampler sampler = new Sampler();
+        float[] probs = { 0.2f, 0.8f };
+        float temp = 1.0f;
+        int hugeTopK = 100;
+        int seed = 123;
+        
+        int result = sampler.Sample(probs, temp, hugeTopK, seed);
+        
+        Assert.That(result, Is.GreaterThanOrEqualTo(0).And.LessThan(2), "The algorithm must work correctly even if TopK exceeds the size of the array.");
+    }
+    
+    [Test]
+    public void Test5()
+    {
+        ISampler sampler = new Sampler();
+        float[] probs = { 1.0f };
+        float temp = 0.5f; 
+        int topK = 5;
+        int seed = 99;
+        
+        int result = sampler.Sample(probs, temp, topK, seed);
+        
+        Assert.That(result, Is.EqualTo(0), "If the input array has only one element, the only possible index is 0.");
+    }
+    
+    [Test]
+    public void Test6()
+    {
+        ISampler sampler = new Sampler();
+        float[] probs = { 0.4f, 0.6f };
+        float temp = 1.0f;
+        int topK = 2;
+        
+        int result = sampler.Sample(probs, temp, topK, (Random?)null);
+        
+        Assert.That(result, Is.InRange(0, 1), 
+            "If `null` is passed instead of `Random`, the algorithm should generate it on its own and function properly.");
+    }
 }

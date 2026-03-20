@@ -12,7 +12,7 @@ public class SamplerTests
         float[] probs = { 0.1f, 0.5f, 0.3f, 0.05f, 0.05f };
         float temp = 1.0f;
         int topK = 5;
-        int seed = 42;
+        int seed = 55;
 
         int[] resultsRun1 = new int[10];
         int[] resultsRun2 = new int[10];
@@ -76,7 +76,7 @@ public class SamplerTests
         float[] probs = { 0.2f, 0.8f };
         float temp = 1.0f;
         int hugeTopK = 100;
-        int seed = 123;
+        int seed = 100;
         
         int result = sampler.Sample(probs, temp, hugeTopK, seed);
         

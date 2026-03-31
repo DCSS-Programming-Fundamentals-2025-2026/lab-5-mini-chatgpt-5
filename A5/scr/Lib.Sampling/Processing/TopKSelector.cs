@@ -4,26 +4,30 @@ public static class TopKSelector
 {
     public static int[] GetTopKIndices(float[] values, int k)
     {
-        int length = values.Length;
+        if (values == null || values.Length == 0)
+            throw new ArgumentException("Values cannot be null or empty.");
 
-        float[] valuesCopy = new float[length];
-        int[] indices = new int[length];
+        if (k <= 0)
+            throw new ArgumentOutOfRangeException(nameof(k));
 
-        for (int i = 0; i < length; i++)
+        int n = values.Length;
+        int actualK = Math.Min(k, n);
+
+        int[] indices = new int[n];
+        float[] copy = new float[n];
+
+        for (int i = 0; i < n; i++)
         {
-            valuesCopy[i] = values[i];
-            indices[i] = i; 
+            indices[i] = i;
+            copy[i] = values[i];
         }
 
-        Array.Sort(valuesCopy, indices);
+        Array.Sort(copy, indices);
 
-        int actualK = Math.Min(k, length);
         int[] result = new int[actualK];
 
         for (int i = 0; i < actualK; i++)
-        {
-            result[i] = indices[length - 1 - i];
-        }
+            result[i] = indices[n - 1 - i];
 
         return result;
     }

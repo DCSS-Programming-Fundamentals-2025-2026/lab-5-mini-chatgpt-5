@@ -1,6 +1,9 @@
 namespace Tests;
 
 using scr;
+using scr.Lib.Sampling.Processing;
+using scr.Processing;
+using NUnit.Framework;
 
 [TestFixture]
 public class SamplerTests
@@ -109,5 +112,21 @@ public class SamplerTests
         
         Assert.That(result, Is.InRange(0, 1), 
             "If `null` is passed instead of `Random`, the algorithm should generate it on its own and function properly.");
+    }
+
+
+
+    [Test]
+    public void Test7()
+    {
+        float[] probs = { 0.4f, 0.6f };
+
+        float[] lowTemp = TemperatureScaler.Scale(probs, 0.5f);
+        float[] highTemp = TemperatureScaler.Scale(probs, 2.0f);
+
+        float[] normLow = ProbabilityNormalizer.Normalize(lowTemp);
+        float[] normHigh = ProbabilityNormalizer.Normalize(highTemp);
+
+        Assert.That(normLow[1], Is.GreaterThan(normHigh[1]));
     }
 }

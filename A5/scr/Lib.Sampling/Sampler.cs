@@ -1,4 +1,3 @@
-using System.Net.Security;
 using scr.Lib.Sampling.Processing;
 using scr.Processing;
 
@@ -8,43 +7,38 @@ public class Sampler : ISampler
 {
     public int Sample(float[] probs, float temperature, int topK, Random? rng)
     {
-        if (rng == null)
-        {
-            rng = new Random();
-        }
+        if (probs == null || probs.Length == 0)
+            throw new ArgumentException("Probs cannot be null or empty.");
 
-        float[] temperedLogits = TemperatureScaler.Scale(probs, temperature);
-        int[] topKIndices = TopKSelector.GetTopKIndices(temperedLogits, topK);
-        float[] topKlogits = new float[topKIndices.Length];
+        if (rng == null)
+            rng = new Random();
+
+        float[] logits = TemperatureScaler.Scale(probs, temperature);
+
+        int[] topKIndices = TopKSelector.GetTopKIndices(logits, topK);
+
+        float[] topKLogits = new float[topKIndices.Length];
 
         for (int i = 0; i < topKIndices.Length; i++)
-        {
-            topKlogits[i] = temperedLogits[topKIndices[i]];
-        }
+            topKLogits[i] = logits[topKIndices[i]];
 
-        float[] topKProbs = ProbabilityNormalizer.Normalize(topKlogits);
-        float randomValue = (float)rng.NextDouble();
+        float[] topKProbs = ProbabilityNormalizer.Normalize(topKLogits);
 
-        float cumulativeProbability = 0f;
-        int selectedIndex = 0;
+        float r = (float)rng.NextDouble();
+        float cumulative = 0f;
 
         for (int i = 0; i < topKProbs.Length; i++)
         {
-            cumulativeProbability += topKProbs[i];
-
-            if (randomValue <= cumulativeProbability)
-            {
-                selectedIndex = i;
-                break;
-            }
+            cumulative += topKProbs[i];
+            if (r <= cumulative)
+                return topKIndices[i];
         }
 
-        return topKIndices[selectedIndex];
+        return topKIndices[^1];
     }
 
     public int Sample(float[] probs, float temperature, int topK, int seed)
     {
-        Random deterministicRng = new Random(seed);
-        return Sample(probs, temperature, topK, deterministicRng);
+        return Sample(probs, temperature, topK, new Random(seed));
     }
 }

@@ -4,20 +4,20 @@ public static class TemperatureScaler
 {
     public static float[] Scale(float[] probs, float temperature)
     {
+        if (probs == null || probs.Length == 0)
+            throw new ArgumentException("Probs cannot be null or empty.");
+
         if (temperature <= 0f)
-        {
-            throw new ArgumentOutOfRangeException(nameof(temperature), "Temperature must be > 0.");
-        }
+            throw new ArgumentOutOfRangeException(nameof(temperature));
 
-        float[] tempered = new float[probs.Length];
+        float[] result = new float[probs.Length];
 
-        for (int i = 0; i < tempered.Length; i++)
+        for (int i = 0; i < probs.Length; i++)
         {
             float p = Math.Max(probs[i], 1e-7f);
-
-            tempered[i] = (float)Math.Log(p) / temperature;
+            result[i] = (float)Math.Log(p) / temperature;
         }
 
-        return tempered;
+        return result;
     }
 }
